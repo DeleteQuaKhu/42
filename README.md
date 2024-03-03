@@ -66,7 +66,48 @@ def insert_images_at_text_positions(ppt_path, img_directory):
 ppt_path = r"C:\Users\TechnoStar\Documents\Valve_missalignment\ver2\42\New Microsoft PowerPoint Presentation.pptx"
 img_directory = r"C:\Users\TechnoStar\Documents\Valve_missalignment\ver2\42"
 insert_images_at_text_positions(ppt_path, img_directory)
+##########################################################
+###########   transform 3/3/2024  ########################
+##########################################################
+import numpy as np
 
+def distance(point1, point2):
+    # Tính khoảng cách giữa hai điểm trong không gian 3D
+    return np.sqrt((point1[0]-point2[0])**2 + (point1[1]-point2[1])**2 + (point1[2]-point2[2])**2)
+
+def transform_points(big_list):
+    first_point = np.array(big_list[0][1:])
+    last_point = np.array(big_list[-1][1:])
+    line_vector = last_point - first_point
+    
+    transformed_points = []
+    for item in big_list:
+        point = np.array(item[1:])
+        projected_point = first_point + np.dot(point - first_point, line_vector) / np.dot(line_vector, line_vector) * line_vector
+        transformed_points.append(projected_point)
+    
+    return transformed_points
+
+def sort_by_distance(transformed_points):
+    # Tính toán khoảng cách từ các điểm mới đến điểm đầu
+    distances = [distance(np.array([0, 0, 0]), point) for point in transformed_points]
+    
+    # Sắp xếp lại big_list theo khoảng cách tăng dần
+    sorted_indices = np.argsort(distances)
+    sorted_points = [transformed_points[i] for i in sorted_indices]
+    
+    return sorted_points
+
+def transform_and_sort(big_list):
+    transformed_points = transform_points(big_list)
+    sorted_points = sort_by_distance(transformed_points)
+    
+    return sorted_points
+
+# Example usage
+big_list = [[1232, 0, 1, 3], [112, 0, 1, 0], [1332, 0, 2, 3]]
+sorted_points = transform_and_sort(big_list)
+print(sorted_points)
 
 big_list = [[132, 1, 3, 5], [122, 2, 4, 12], [131, 3, 5, 7], [221, 4, 6, 4]]
 
